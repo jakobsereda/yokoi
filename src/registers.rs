@@ -37,6 +37,7 @@ impl Registers {
 
     pub fn get_af(&self) -> u16 {
         // TODO
+        0
     }
 
     pub fn set_af(&mut self, val: u16) {
@@ -54,6 +55,7 @@ impl Registers {
 
     pub fn get_de(&self) -> u16 {
         // TODO
+        0
     }
 
     pub fn set_de(&mut self, val: u16) {
@@ -62,6 +64,7 @@ impl Registers {
 
     pub fn get_hl(&self) -> u16 {
         // TODO
+        0
     }
 
     pub fn set_hl(&mut self, val: u16) {
