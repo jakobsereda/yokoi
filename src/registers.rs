@@ -20,28 +20,29 @@ pub enum Flags {
 
 impl Registers {
     pub fn new() -> Self {
+        use Flags::*;
         Self {
             // TODO: find vals for register initialization and/or boot rom
-            a: 0,
-            f: 0,
-            b: 0,
-            c: 0,
-            d: 0,
-            e: 0,
-            h: 0,
-            l: 0,
-            pc: 0,
-            sp: 0,
+            a: 0x01,
+            f: Z as u8,
+            b: 0x00,
+            c: 0x13,
+            d: 0x00,
+            e: 0xd8,
+            h: 0x01,
+            l: 0x4d,
+            pc: 0x0100,
+            sp: 0xfffe,
         }
     }
 
     pub fn get_af(&self) -> u16 {
-        // TODO
-        0
+        (self.a as u16) << 8 | (self.f & 0xf0) as u16
     }
 
     pub fn set_af(&mut self, val: u16) {
-        // TODO
+        self.a = (val >> 8) as u8;
+        self.f = (val & 0xf0) as u8;
     }
 
     pub fn get_bc(&self) -> u16 {
@@ -49,25 +50,25 @@ impl Registers {
     }
 
     pub fn set_bc(&mut self, val: u16) {
-        self.b = ((val & 0xff00) >> 8) as u8;
+        self.b = (val >> 8) as u8;
         self.c = (val & 0xff) as u8;
     }
 
     pub fn get_de(&self) -> u16 {
-        // TODO
-        0
+        (self.d as u16) << 8 | self.e as u16
     }
 
     pub fn set_de(&mut self, val: u16) {
-        // TODO
+        self.d = (val >> 8) as u8;
+        self.e = (val & 0xff) as u8;
     }
 
     pub fn get_hl(&self) -> u16 {
-        // TODO
-        0
+        (self.h as u16) << 8 | self.l as u16
     }
 
     pub fn set_hl(&mut self, val: u16) {
-        // TODO
+        self.h = (val >> 8) as u8;
+        self.l = (val & 0xff) as u8;
     }
 }
