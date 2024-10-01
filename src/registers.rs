@@ -1,14 +1,14 @@
 pub struct Registers {
-    a: u8,
+    pub a: u8,
     f: u8,
-    b: u8,
-    c: u8,
-    d: u8,
-    e: u8,
-    h: u8,
-    l: u8,
-    pc: u16,
-    sp: u16,
+    pub b: u8,
+    pub c: u8,
+    pub d: u8,
+    pub e: u8,
+    pub h: u8,
+    pub l: u8,
+    pub pc: u16,
+    pub sp: u16,
 }
 
 pub enum Flags {
@@ -22,9 +22,8 @@ impl Registers {
     pub fn new() -> Self {
         use Flags::*;
         Self {
-            // TODO: find vals for register initialization and/or boot rom
             a: 0x01,
-            f: Z as u8,
+            f: Z as u8 | H as u8 | C as u8,
             b: 0x00,
             c: 0x13,
             d: 0x00,
@@ -70,5 +69,31 @@ impl Registers {
     pub fn set_hl(&mut self, val: u16) {
         self.h = (val >> 8) as u8;
         self.l = (val & 0xff) as u8;
+    }
+
+    pub fn hli(&mut self) -> u16 {
+        let tmp = self.get_hl();
+        self.set_hl(tmp + 1);
+        tmp
+    }
+
+    pub fn hld(&mut self) -> u16 {
+        let tmp = self.get_hl();
+        self.set_hl(tmp - 1);
+        tmp
+    }
+
+    pub fn get_flag(&self, flags: Flags) -> bool {
+        let mask = flags as u8;
+        self.f & mask > 0
+    }
+
+    pub fn set_flag(&mut self, flags: Flags, set: bool) {
+        let mask = flags as u8;
+        match set {
+            true  => self.f |= mask,
+            false => self.f &= !mask,
+        }
+        self.f &= 0xf0;
     }
 }
