@@ -51,7 +51,7 @@ static CART_TYPE_MAP: phf::Map<u8, &'static str> = phf_map! {
     0xFFu8 => "HuC1+RAM+BATTERY",
 };
 
-static LICENSEE_CODE_MAP: phf::Map<u16, &'static str> = phf_map! {
+static NEW_LICENSEE_CODE_MAP: phf::Map<u16, &'static str> = phf_map! {
     0x3030u16 => "None",
     0x3031u16 => "Nintendo Research & Development 1",
     0x3038u16 => "Capcom",
@@ -115,6 +115,41 @@ static LICENSEE_CODE_MAP: phf::Map<u16, &'static str> = phf_map! {
     0x4134u16 => "Konami (Yu-Gi-Oh!)",
 };
 
+static OLD_LICENSEE_CODE_MAP: phf::Map<u8, &'static str> = phf_map! {
+    0x00u8 => "None",
+    0x01u8 => "Nintendo",
+    0x08u8 => "",
+    0x09u8 => "",
+    0x0Au8 => "",
+    0x0Bu8 => "",
+    0x0Cu8 => "",
+    0x13u8 => "",
+    0x18u8 => "",
+    0x19u8 => "",
+    0x1Au8 => "",
+    0x1Du8 => "",
+    0x1Fu8 => "",
+    0x24u8 => "",
+    0x25u8 => "",
+    0x28u8 => "",
+    0x29u8 => "",
+    0x30u8 => "",
+    0x31u8 => "",
+    0x32u8 => "",
+    0x33u8 => "",
+    0x34u8 => "",
+    0x35u8 => "",
+    0x38u8 => "",
+    0x39u8 => "",
+    0x3Cu8 => "",
+    0x3Eu8 => "",
+    0x41u8 => "",
+    0x42u8 => "",
+    0x44u8 => "",
+    0x46u8 => "",
+    // TODO: finish this!
+};
+
 impl Cartridge {
     pub fn from_bytes(data: &[u8]) -> Result<Self> {
         if data.len() < 0x150 {
@@ -146,10 +181,18 @@ impl Cartridge {
     }
 
     pub fn get_lic_code(&self) -> Result<&'static str> {
-        LICENSEE_CODE_MAP
-            .get(&self.new_lic_code)
-            .copied()
-            .ok_or_else(|| anyhow!("Unknown licensee code: {:#04x}", self.new_lic_code))
+        // TODO: check if old or new lic code and return appropriate value
+        if self.old_lic_code == 0x33 {
+            NEW_LICENSEE_CODE_MAP
+                .get(&self.new_lic_code)
+                .copied()
+                .ok_or_else(|| anyhow!("Unknown (new) licensee code: {:#04x}", self.new_lic_code))
+        } else {
+            OLD_LICENSEE_CODE_MAP
+                .get(&self.old_lic_code)
+                .copied()
+                .ok_or_else(|| anyhow!("Unknown licensee code: {:#04x}", self.new_lic_code))
+        }
     }
 }
 
