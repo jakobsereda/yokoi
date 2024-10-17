@@ -27,21 +27,21 @@ impl Registers {
             b: 0x00,
             c: 0x13,
             d: 0x00,
-            e: 0xd8,
+            e: 0xD8,
             h: 0x01,
-            l: 0x4d,
+            l: 0x4D,
             pc: 0x0100,
-            sp: 0xfffe,
+            sp: 0xFFFE,
         }
     }
 
     pub fn get_af(&self) -> u16 {
-        (self.a as u16) << 8 | (self.f & 0xf0) as u16
+        (self.a as u16) << 8 | (self.f & 0xF0) as u16
     }
 
     pub fn set_af(&mut self, val: u16) {
         self.a = (val >> 8) as u8;
-        self.f = (val & 0xf0) as u8;
+        self.f = (val & 0xF0) as u8;
     }
 
     pub fn get_bc(&self) -> u16 {
@@ -50,7 +50,7 @@ impl Registers {
 
     pub fn set_bc(&mut self, val: u16) {
         self.b = (val >> 8) as u8;
-        self.c = (val & 0xff) as u8;
+        self.c = (val & 0xFF) as u8;
     }
 
     pub fn get_de(&self) -> u16 {
@@ -59,7 +59,7 @@ impl Registers {
 
     pub fn set_de(&mut self, val: u16) {
         self.d = (val >> 8) as u8;
-        self.e = (val & 0xff) as u8;
+        self.e = (val & 0xFF) as u8;
     }
 
     pub fn get_hl(&self) -> u16 {
@@ -68,7 +68,7 @@ impl Registers {
 
     pub fn set_hl(&mut self, val: u16) {
         self.h = (val >> 8) as u8;
-        self.l = (val & 0xff) as u8;
+        self.l = (val & 0xFF) as u8;
     }
 
     pub fn hli(&mut self) -> u16 {
@@ -94,6 +94,6 @@ impl Registers {
             true  => self.f |= mask,
             false => self.f &= !mask,
         }
-        self.f &= 0xf0;
+        self.f &= 0xF0;
     }
 }

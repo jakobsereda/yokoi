@@ -4,6 +4,7 @@ use std::{
     fs::{self},
     path::Path,
 };
+use yokoi::cartridge;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -17,8 +18,16 @@ fn main() -> Result<()> {
     let args = Args::parse();
     let expanded = shellexpand::tilde(&args.path).to_string();
     let path = Path::new(&expanded);
-    let contents = fs::read_to_string(path)
+
+    let contents = fs::read(path)
         .with_context(|| format!("Failed to read from file: {:#?}", path))?;
-    println!("{}", contents);
+
+    let cartridge = cartridge::Cartridge::from_bytes(&contents)
+        .with_context(|| format!("Failed to parse ROM data into cartridge"))?;
+
+    // println!("{}", contents);
+    println!("Cartidge Type: {}", cartridge.get_cart_type()?);
+    println!("Licensee Code: {}", cartridge.get_lic_code()?);
+
     Ok(())
 }
