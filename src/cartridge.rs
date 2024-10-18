@@ -249,7 +249,7 @@ static OLD_LICENSEE_CODE_MAP: phf::Map<u8, &'static str> = phf_map! {
     0xFFu8 => "LJN",
 };
 
-pub struct Cartridge {
+struct Header {
     entry: [u8; 0x4],
     logo: [u8; 0x30],
     title: [u8; 0x10],
@@ -265,13 +265,18 @@ pub struct Cartridge {
     global_checksum: u16,
 }
 
+pub struct Cartridge {
+    header: Header,
+    data: Vec<u8>,
+}
+
 impl Cartridge {
     pub fn from_bytes(data: &[u8]) -> Result<Self> {
         if data.len() < 0x150 {
             return Err(anyhow!("ROM data is not long enough"))
         }
 
-        Ok(Self {
+        let header = Header {
             entry: data[0x100..0x104].try_into()?,
             logo: data[0x104..0x134].try_into()?,
             title: data[0x134..0x144].try_into()?,
@@ -285,27 +290,35 @@ impl Cartridge {
             version: data[0x14C],
             checksum: data[0x14D],
             global_checksum: u16::from_be_bytes([data[0x14E], data[0x14F]]),
+        };
+
+        Ok(Self {
+            header: header,
+            data: data.to_vec(),
         })
     }
 
+    pub fn cart_read(&self, address: u16) -> Result<u8> {
+        self.data.get(address as usize).copied()
+            .ok_or_else(|| anyhow!("Address out of bounds"))
+    }
+
+    pub fn cart_write(&self, address: u16, value: u8) {
+        // TODO
+    }
+
     pub fn get_cart_type(&self) -> Result<&'static str> {
-        CART_TYPE_MAP
-            .get(&self.cart_type)
-            .copied()
-            .ok_or_else(|| anyhow!("Unknown cartridge type: {:#04x}", self.cart_type))
+        CART_TYPE_MAP.get(&self.header.cart_type).copied()
+            .ok_or_else(|| anyhow!("Unknown cartridge type: {:#04x}", self.header.cart_type))
     }
 
     pub fn get_lic_code(&self) -> Result<&'static str> {
-        if self.old_lic_code == 0x33 {
-            NEW_LICENSEE_CODE_MAP
-                .get(&self.new_lic_code)
-                .copied()
-                .ok_or_else(|| anyhow!("Unknown new licensee code: {:#04x}", self.new_lic_code))
+        if self.header.old_lic_code == 0x33 {
+            NEW_LICENSEE_CODE_MAP.get(&self.header.new_lic_code).copied()
+                .ok_or_else(|| anyhow!("Unknown new licensee code: {:#04x}", self.header.new_lic_code))
         } else {
-            OLD_LICENSEE_CODE_MAP
-                .get(&self.old_lic_code)
-                .copied()
-                .ok_or_else(|| anyhow!("Unknown old licensee code: {:#04x}", self.old_lic_code))
+            OLD_LICENSEE_CODE_MAP.get(&self.header.old_lic_code).copied()
+                .ok_or_else(|| anyhow!("Unknown old licensee code: {:#04x}", self.header.old_lic_code))
         }
     }
 }

@@ -1,10 +1,10 @@
 use clap::Parser;
 use anyhow::{Result, Context};
+use yokoi::cartridge;
 use std::{
     fs::{self},
     path::Path,
 };
-use yokoi::cartridge;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]

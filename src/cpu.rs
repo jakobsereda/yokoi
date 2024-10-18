@@ -1,4 +1,7 @@
-use crate::registers::{self, Registers};
+use crate::registers::{
+    self,
+    Registers
+};
 
 pub struct CPU {
     registers: Registers,
@@ -33,8 +36,5 @@ impl CPU {
             
             _ => panic!("Unimplemented opcode: {}", op)
         }
-
     }
-
-
 }
