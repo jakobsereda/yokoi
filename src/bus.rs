@@ -1,11 +1,26 @@
-use anyhow::{
-    Result
-};
+use anyhow::{Context, Result};
 
-pub fn bus_read(address: u16) -> Result<u8> {
-    Ok(0)
+#[derive(Debug)]
+pub struct Bus {
+    data: Vec<u8>,
 }
 
-pub fn bus_write(address: u16, value: u8) {
+impl Bus {
+    pub fn new(data: Vec<u8>) -> Self {
+        Self { data }
+    }
 
+    pub fn read_byte(&self, address: u16) -> Result<u8> {
+        let index = address as usize;
+        self.data
+            .get(index)
+            .copied()
+            .with_context(|| format!("Address out of bounds: 0x{:04X}", address))
+    }
+
+    pub fn read_word(&self, address: u16) -> Result<u16> {
+        let lo = self.read_byte(address)? as u16;
+        let hi = self.read_byte(address + 1)? as u16;
+        Ok((hi << 8) | lo)
+    }
 }

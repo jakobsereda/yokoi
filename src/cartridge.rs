@@ -1,6 +1,6 @@
 use phf::phf_map;
 use anyhow::{
-    Result, 
+    Result,
     anyhow
 };
 
@@ -292,10 +292,7 @@ impl Cartridge {
             global_checksum: u16::from_be_bytes([data[0x14E], data[0x14F]]),
         };
 
-        Ok(Self {
-            header: header,
-            data: data.to_vec(),
-        })
+        Ok(Self { header, data: data.to_vec(), })
     }
 
     pub fn cart_read(&self, address: u16) -> Result<u8> {
@@ -307,6 +304,9 @@ impl Cartridge {
         // TODO
     }
 
+    // TODO: should these stay as Results or would Option be a
+    //       more appropriate choice... will stick with Result
+    //       for now and wait to see what call sites look like
     pub fn get_cart_type(&self) -> Result<&'static str> {
         CART_TYPE_MAP.get(&self.header.cart_type).copied()
             .ok_or_else(|| anyhow!("Unknown cartridge type: {:#04x}", self.header.cart_type))

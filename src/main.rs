@@ -1,6 +1,7 @@
 use clap::Parser;
 use anyhow::{Result, Context};
 use yokoi::cartridge;
+use yokoi::cpu;
 use std::{
     fs::{self},
     path::Path,
@@ -25,9 +26,12 @@ fn main() -> Result<()> {
     let cartridge = cartridge::Cartridge::from_bytes(&contents)
         .with_context(|| format!("Failed to parse ROM data into cartridge"))?;
 
+    let mut cpu = cpu::CPU::new(&contents);
+
     // println!("{}", contents);
     println!("Cartidge Type: {}", cartridge.get_cart_type()?);
     println!("Licensee Code: {}", cartridge.get_lic_code()?);
+    let _ = cpu.tick();
 
     Ok(())
 }
