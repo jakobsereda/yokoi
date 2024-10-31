@@ -23,4 +23,9 @@ impl Bus {
         let hi = self.read_byte(address + 1)? as u16;
         Ok((hi << 8) | lo)
     }
+
+    pub fn write_byte(&self, val: u8, address: u16) -> Result<()> {
+        // TODO
+        Ok(())
+    }
 }
