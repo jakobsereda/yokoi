@@ -5,6 +5,7 @@ use anyhow::{
     Result
 };
 
+// 😳😳😳😳
 pub struct CPU {
     registers: Registers,
     bus: Bus,
@@ -19,7 +20,7 @@ impl CPU {
 
     pub fn tick(&mut self) -> Result<()> {
         let op = self.fetch()?;
-        self.execute(op);
+        self.execute(op)?;
         Ok(())
     }
 
@@ -31,7 +32,7 @@ impl CPU {
         Ok(op)
     }
 
-    fn execute(&mut self, op: u8) {
+    fn execute(&mut self, op: u8) -> Result<()> {
         let pc = self.registers.pc;
         match op {
             // -- NOP --
@@ -41,7 +42,7 @@ impl CPU {
             0x01 => {
                 // TODO: handle error / decide how errors should be handled in execute phase
                 let val = self.bus.read_word(pc)
-                    .unwrap();
+                    .context("Opcode 0x01 failed to read from ROM")?;
                 self.registers.pc = pc.wrapping_add(2);
                 self.registers.set_bc(val);
             }
@@ -51,7 +52,7 @@ impl CPU {
                 let val = self.registers.a;
                 let addr = self.registers.get_bc();
                 self.bus.write_byte(val, addr)
-                    .unwrap();
+                    .context("Opcode 0x02 failed to write to ROM")?;
             }
 
             // -- INC BC --
@@ -63,18 +64,18 @@ impl CPU {
             // -- INC B --
             0x04 => {
                 // TODO: flag checking??
-                self.registers.b += 1;
+                self.registers.b = self.registers.b.wrapping_add(1);
             }
 
             // -- DEC B --
-            0x05 => {
-                self.registers.b -= 1;
+            0x05 => { 
+                self.registers.b = self.registers.b.wrapping_sub(1); 
             }
 
             // -- LD B, u8 --
             0x06 => {
                 let val = self.bus.read_byte(pc)
-                    .unwrap();
+                    .context("Opcode 0x06 failed to read from ROM")?;
                 self.registers.pc = pc.wrapping_add(1);
                 self.registers.b = val;
             }
@@ -96,5 +97,7 @@ impl CPU {
 
             _ => unimplemented!("Unimplemented opcode: {:#04X}", op)
         }
+
+        Ok(())
     }
 }
