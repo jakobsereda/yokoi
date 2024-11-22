@@ -5,7 +5,6 @@ use anyhow::{
     Result
 };
 
-// 😳😳😳😳
 pub struct CPU {
     registers: Registers,
     bus: Bus,
