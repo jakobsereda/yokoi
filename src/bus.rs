@@ -1,4 +1,7 @@
-use anyhow::{Context, Result};
+use anyhow::{
+    Context, 
+    Result
+};
 
 #[derive(Debug)]
 pub struct Bus {
