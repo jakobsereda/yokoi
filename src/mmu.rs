@@ -5,6 +5,8 @@ pub struct MMU {
 
 impl MMU {
     pub fn new() -> Self {
-        Self { memory: vec![u8; 0xFFFF] }
+        Self { 
+            memory: vec![u8; 0xFFFF] 
+        }
     }
 }

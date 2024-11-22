@@ -10,7 +10,9 @@ pub struct Bus {
 
 impl Bus {
     pub fn new(data: Vec<u8>) -> Self {
-        Self { data }
+        Self { 
+            data 
+        }
     }
 
     pub fn read_byte(&self, address: u16) -> Result<u8> {

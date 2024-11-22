@@ -14,7 +14,9 @@ impl CPU {
     pub fn new(data: &[u8]) -> Self {
         let registers = Registers::new();
         let bus = Bus::new(data.to_vec());
-        Self { registers, bus }
+        Self { 
+            registers, bus 
+        }
     }
 
     pub fn tick(&mut self) -> Result<()> {
